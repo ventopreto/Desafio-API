@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+  web:
+    tty: true
+    stdin_open: true
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3001 -b '0.0.0.0'"
+    volumes:
+      - .:/myapp
+      - gems_cache:/usr/local/bundle
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+
+volumes:
+  gems_cache:

@@ -1,0 +1,9 @@
+parallel: true
+format: progress
+plugins:
+  - standard-rails
+ignore:
+  - test/**/*
+  - config/**/*
+  - app/mailers/*
+  - spec/rails_helper.rb
