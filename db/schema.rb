@@ -1,4 +1,4 @@
-ActiveRecord::Schema.define(version: 2024_10_23_172528) do
+ActiveRecord::Schema.define(version: 2024_10_24_184247) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -9,7 +9,7 @@ ActiveRecord::Schema.define(version: 2024_10_23_172528) do
     t.string "country"
     t.date "published_at"
     t.text "description"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", precision: 6, default: -> { "CURRENT_TIMESTAMP" }, null: false
   end
 end
