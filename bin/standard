@@ -1,0 +1,11 @@
+#!/bin/bash
+
+exec docker compose \
+  run \
+  --rm \
+  --no-deps \
+  --no-TTY \
+  --volume "$PWD:$PWD" \
+  --name "${COMPOSE_PROJECT_NAME:-$(basename $PWD)}-standardrb-$$" \
+  web \
+  standardrb "$@"

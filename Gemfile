@@ -1,14 +1,14 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.4'
+ruby "3.1.4"
 
-gem 'rails', '~> 6.1.7', '>= 6.1.7.9'
-gem 'pg', '~> 1.1'
+gem "rails", "~> 6.1.7", ">= 6.1.7.9"
+gem "pg", "~> 1.1"
 
-gem 'puma', '~> 5.0'
+gem "puma", "~> 5.0"
 
-gem 'bootsnap', '>= 1.4.4', require: false
+gem "bootsnap", ">= 1.4.4", require: false
 
 group :development, :test do
   gem "standard"
@@ -19,8 +19,12 @@ group :development, :test do
 end
 
 group :development do
-  gem 'listen', '~> 3.3'
-  gem 'spring'
+  gem "listen", "~> 3.3"
+  gem "spring"
 end
 
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+group :test do
+  gem "shoulda-matchers", "~> 6.0"
+end
+
+gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
