@@ -1,6 +1,15 @@
-ActiveRecord::Schema.define(version: 2024_10_24_184247) do
+ActiveRecord::Schema.define(version: 2024_10_25_015945) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "movie_imports", force: :cascade do |t|
+    t.string "file_name"
+    t.string "error_message"
+    t.integer "status"
+    t.integer "movies_count"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "movies", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "title"

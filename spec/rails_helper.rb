@@ -1,5 +1,13 @@
 require "spec_helper"
 require "shoulda/matchers"
+require "simplecov"
+
+SimpleCov.start "rails" do
+  add_filter "channels"
+  add_filter "mailers"
+  add_filter "jobs"
+
+end
 
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../config/environment", __dir__)

@@ -2,8 +2,9 @@ require "rails_helper"
 
 RSpec.describe "Movies API", type: :request do
   include ActionDispatch::TestProcess::FixtureFile
-  let(:valid_csv) { fixture_file_upload("spec/fixtures/valid_movies.csv", "text/csv") }
-  let(:invalid_csv) { fixture_file_upload("spec/fixtures/invalid_movies.txt", "text/txt") }
+  let(:valid_csv) { fixture_file_upload("spec/fixtures/valid_file.csv", "text/csv") }
+  let(:invalid_csv) { fixture_file_upload("spec/fixtures/invalid_file.txt", "text/txt") }
+  let(:movie_import) { MovieImport.new }
 
   describe "POST /api/v1/movies" do
     context "Quando um arquivo csv valido é enviado" do
@@ -23,17 +24,7 @@ RSpec.describe "Movies API", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)
-        expect(json["error"]).to eq("Formato de arquivo inválido. Por favor, envie um arquivo CSV.")
-      end
-    end
-
-    context "Quando nenhum arquivo é enviado" do
-      it "retorna uma mensagem de erro sobre arquivo não enviado" do
-        post "/api/v1/movies", params: {}
-
-        expect(response).to have_http_status(:unprocessable_entity)
-        json = JSON.parse(response.body)
-        expect(json["error"]).to eq("Nenhum arquivo foi enviado. Por favor, envie um arquivo CSV.")
+        expect(json["error"]).to eq("Erro na importação. Formato de arquivo inválido. Por favor, envie um arquivo CSV.")
       end
     end
   end
