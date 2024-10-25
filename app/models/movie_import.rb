@@ -14,7 +14,7 @@ class MovieImport < ApplicationRecord
       movies_data = create_movies(file)
       update(status: 2, movies_count: movies_data.size) if movies_data.any?
     rescue ActiveRecord::RecordInvalid => e
-      update_failed_import(I18n.t("messages.import.create_error"), 0)
+      update_failed_import(I18n.t("messages.import.create_error", error_message: e), 0)
     end
   end
 
