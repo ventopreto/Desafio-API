@@ -20,11 +20,13 @@ end
 
 group :development do
   gem "listen", "~> 3.3"
+  gem "rails-i18n", "~> 6.0"
   gem "spring"
 end
 
 group :test do
   gem "shoulda-matchers", "~> 6.0"
+  gem "simplecov", require: false
 end
 
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
