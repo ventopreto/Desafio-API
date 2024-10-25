@@ -3,7 +3,7 @@ class Api::V1::MoviesController < ApplicationController
 
   def create
     uploaded_file = params[:file]
-    result = Movie.insert_all(remove_unused_data(uploaded_file)) if validates_csv_file(uploaded_file)
+    result = Movie.insert_all(parse_csv_data(uploaded_file)) if validates_csv_file(uploaded_file)
     if result && result.count > 0
       render json: {message: "#{result.rows.size} Filmes adicionados com sucesso."}, status: :created
     else
@@ -22,9 +22,10 @@ class Api::V1::MoviesController < ApplicationController
     true
   end
 
-  def remove_unused_data(data)
+  def parse_csv_data(file)
     require "csv"
-    CSV.readlines(data).map!.with_index do |row, index|
+    CSV.readlines(file).map.with_index do |row, index|
+      next if index == 0
       {
         genre: row[1],
         title: row[2],
@@ -33,7 +34,7 @@ class Api::V1::MoviesController < ApplicationController
         year: row[7],
         description: row[11]
       }
-    end.compact
+    end
   end
 
   def handle_invalid_request(exception)
