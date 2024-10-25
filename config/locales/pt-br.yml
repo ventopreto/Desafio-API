@@ -7,6 +7,9 @@ pt-BR:
       invalid_format: "Formato de arquivo inválido. Por favor, envie um arquivo CSV."
       create_error: "Erro ao criar filmes: %{error_message}"
       empty_file: "Arquivo vazio. Por favor, insira um arquivo com dados dos filmes."
+    movies:
+      not_found: "Nenhum filme encontrado"
+      invalid_query_params: "Parâmetro de busca inválido"
   activerecord:
     errors:
       messages:

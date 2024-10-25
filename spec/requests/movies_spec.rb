@@ -28,4 +28,40 @@ RSpec.describe "Movies API", type: :request do
       end
     end
   end
+
+  describe "GET /api/v1/movies" do
+    let!(:movie1) { Movie.create!(title: "3 Idiots", genre: "Movie", year: 2009, country: "India", published_at: "2019-08-01") }
+    let!(:movie2) { Movie.create!(title: "Hereditary", genre: "Movie", year: 2018, country: "USA", published_at: "2018-08-01") }
+    context "Quando existem filmes cadastrados" do
+      it "retorna uma lista de filmes" do
+        get "/api/v1/movies", params: {query: {country_eq: "India"}}
+
+        expect(response).to have_http_status(:ok)
+        expect(json_response.size).to eq(1)
+        expect(json_response.first["title"]).to eq("3 Idiots")
+      end
+    end
+
+    context "Quando não existem filmes cadastrados" do
+      it "retorna a mensagem 'nenhum filme encontrado'" do
+        get "/api/v1/movies", params: {query: {country_eq: "País das Maravilhas"}}
+
+        expect(response).to have_http_status(:ok)
+        expect(json_response["message"]).to eq(I18n.t("messages.movies.not_found"))
+      end
+    end
+
+    context "Quando um Parâmetro inválido é passado no filtro" do
+      it "retorna a mensagem de parâmetro inválido" do
+        get "/api/v1/movies", params: {query: {invalid_param: "value"}}
+
+        expect(response).to have_http_status(:bad_request)
+        expect(json_response["error"]).to eq(I18n.t("messages.movies.invalid_query_params"))
+      end
+    end
+  end
+
+  def json_response
+    JSON.parse(response.body)
+  end
 end

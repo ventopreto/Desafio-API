@@ -16,6 +16,7 @@ group :development, :test do
   gem "pry-byebug"
   gem "rspec-rails", "~> 4.1.2"
   gem "ruby-lsp"
+  gem "ransack"
 end
 
 group :development do
