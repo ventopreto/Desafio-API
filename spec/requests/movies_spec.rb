@@ -2,13 +2,13 @@ require "rails_helper"
 
 RSpec.describe "Movies API", type: :request do
   include ActionDispatch::TestProcess::FixtureFile
-  let(:valid_csv) { fixture_file_upload("spec/fixtures/netflix_titles.csv", "text/csv") }
+  let(:valid_csv) { fixture_file_upload("spec/fixtures/valid_movies.csv", "text/csv") }
   let(:invalid_csv) { fixture_file_upload("spec/fixtures/invalid_movies.txt", "text/txt") }
 
-  describe "POST /api/v1/movie" do
+  describe "POST /api/v1/movies" do
     context "Quando um arquivo csv valido é enviado" do
       it "cria os filmes do banco e retorna uma mensagem de sucesso" do
-        post "/api/v1/movie", params: {file: valid_csv}
+        post "/api/v1/movies", params: {file: valid_csv}
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -19,7 +19,7 @@ RSpec.describe "Movies API", type: :request do
 
     context "Quando um arquivo diferente é enviado" do
       it "retorna uma mensagem de erro sobre formato inválido" do
-        post "/api/v1/movie", params: {file: invalid_csv}
+        post "/api/v1/movies", params: {file: invalid_csv}
 
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)
@@ -29,7 +29,7 @@ RSpec.describe "Movies API", type: :request do
 
     context "Quando nenhum arquivo é enviado" do
       it "retorna uma mensagem de erro sobre arquivo não enviado" do
-        post "/api/v1/movie", params: {}
+        post "/api/v1/movies", params: {}
 
         expect(response).to have_http_status(:unprocessable_entity)
         json = JSON.parse(response.body)

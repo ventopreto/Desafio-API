@@ -1,4 +1,4 @@
-class Api::V1::MovieController < ApplicationController
+class Api::V1::MoviesController < ApplicationController
   rescue_from ActionController::BadRequest, with: :handle_invalid_request
 
   def create

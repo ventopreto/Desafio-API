@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      post "/movie", to: "movie#create"
+      post "/movies", to: "movies#create"
     end
   end
 end
