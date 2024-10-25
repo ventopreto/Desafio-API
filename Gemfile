@@ -20,6 +20,7 @@ end
 
 group :development do
   gem "listen", "~> 3.3"
+  gem "rails-i18n", "~> 6.0"
   gem "spring"
 end
 

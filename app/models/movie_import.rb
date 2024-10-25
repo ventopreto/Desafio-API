@@ -7,14 +7,14 @@ class MovieImport < ApplicationRecord
   enum status: {failed: 0, processing: 1, completed: 2, invalid_file: 3}
 
   def import_movies(file)
-    return update_failed_import("Formato de arquivo inválido. Por favor, envie um arquivo CSV.", 3) unless valid_csv_file?(file)
-    return update_failed_import("Arquivo vazio. Por favor, insira um arquivo com dados dos filmes.", 3) unless empty_file?(file)
+    return update_failed_import(I18n.t("messages.import.invalid_format"), 3) unless valid_csv_file?(file)
+    return update_failed_import(I18n.t("messages.import.empty_file"), 3) unless empty_file?(file)
 
     begin
       movies_data = create_movies(file)
       update(status: 2, movies_count: movies_data.size) if movies_data.any?
     rescue ActiveRecord::RecordInvalid => e
-      update_failed_import("Erro ao criar filmes: #{e.message}", 0)
+      update_failed_import(I18n.t("messages.import.create_error"), 0)
     end
   end
 
