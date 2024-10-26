@@ -36,3 +36,7 @@ RSpec.configure do |config|
 
   config.filter_rails_from_backtrace!
 end
+
+def json_response
+  JSON.parse(response.body)
+end

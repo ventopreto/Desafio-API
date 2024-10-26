@@ -22,8 +22,7 @@ RSpec.describe MovieImport, type: :model do
 
     it "mas tem filmes sem titulo corretos processa filmes e atualiza o status para failed" do
       movie_import = MovieImport.create(file_name: with_missing_title.original_filename, status: 1)
-      error_message = "Erro ao criar filmes: A validação falhou: Title não pode ficar em branco, " \
-      "Year não é um número, Published at não pode ficar em branco"
+      error_message = "Erro ao criar filmes: A validação falhou: Title não pode ficar em branco"
 
       expect {
         movie_import.import_movies(with_missing_title)

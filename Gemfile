@@ -7,7 +7,7 @@ gem "rails", "~> 6.1.7", ">= 6.1.7.9"
 gem "pg", "~> 1.1"
 
 gem "puma", "~> 5.0"
-
+gem "rswag"
 gem "bootsnap", ">= 1.4.4", require: false
 
 group :development, :test do
