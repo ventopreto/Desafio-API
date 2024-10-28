@@ -1,0 +1,172 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/movies":
+    get:
+      summary: Retorna uma lista de filmes cadastrados
+      tags:
+      - Movies
+      parameters:
+      - name: query[title_eq]
+        in: query
+        description: Filtrar por titulo
+        required: false
+        schema:
+          type: string
+      - name: query[genre_eq]
+        in: query
+        description: Filtrar por genero
+        required: false
+        schema:
+          type: string
+      - name: query[year_eq]
+        in: query
+        description: Filtrar por ano
+        required: false
+        schema:
+          type: string
+      - name: query[country_eq]
+        in: query
+        description: Filtrar por pais
+        required: false
+        schema:
+          type: string
+      - name: query[published_at]
+        in: query
+        description: Filtrar por data de publicação
+        required: false
+        schema:
+          type: string
+      - name: query[description]
+        in: query
+        description: Filtrar por descrição
+        required: false
+        schema:
+          type: string
+      - name: query[invalid_param_eq]
+        in: query
+        description: Filtro Inválido
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: retorna a mensagem de nenhum filme encontrado
+          content:
+            application/json:
+              examples:
+                expected_response:
+                  value:
+                    id: 123e4567-e89b-12d3-a456-426614174000
+                    title: Terrifier
+                    genre: Terror
+                    year: 2016
+                    country: Estados Unidos
+                    published_at: 15 de março de 2018
+                    description: O filme segue uma noite de Halloween aterrorizante
+                      em que duas jovens encontram Art the Clown, um palhaço perturbador
+                      e mortal que as persegue e tortura de maneira implacável.
+                movie_not_found:
+                  value:
+                    message: Nenhum filme encontrado
+              schema:
+                type: object
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    genre:
+                      type: string
+                    year:
+                      type: integer
+                      format: date
+                    country:
+                      type: string
+                    published_at:
+                      type: string
+                      format: date
+                    description:
+                      type: string
+                  required:
+                  - title
+                  - year
+                  - genre
+                  - published_at
+                properties:
+                  message:
+                    type: string
+                    description: Nenhum filme encontrado
+        '400':
+          description:
+            description: retorna a mensagem de parâmetro inválido
+          content:
+            application/json:
+              examples:
+                invalid_params:
+                  value:
+                    message: Parâmetro de busca inválido
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Parâmetro de busca inválido
+    post:
+      summary: Cadastra uma lista de filmes
+      tags:
+      - Movies
+      parameters: []
+      responses:
+        '201':
+          description: e sem dados faltando cria os filmes no banco e retorna uma
+            mensagem de sucesso
+          content:
+            application/json:
+              examples:
+                movie_created:
+                  value:
+                    message: Filmes adicionados com sucesso.
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Filmes adicionados com sucesso.
+        '422':
+          description: retorna uma mensagem de erro sobre formato inválido
+          content:
+            application/json:
+              examples:
+                fail_validation:
+                  value:
+                    message: 'A validação falhou: Title não pode ficar em branco'
+                invalid_file:
+                  value:
+                    error: Erro na importação. Formato de arquivo inválido. Por favor,
+                      envie um arquivo CSV.
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Erro na importação. Formato de arquivo inválido.
+                      Por favor, envie um arquivo CSV.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: file
+        required: true
+        description: recebe um arquivo CSV com os dados dos filmes e cadastra no banco
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com

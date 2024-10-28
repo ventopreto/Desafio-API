@@ -7,7 +7,7 @@ gem "rails", "~> 6.1.7", ">= 6.1.7.9"
 gem "pg", "~> 1.1"
 
 gem "puma", "~> 5.0"
-
+gem "rswag"
 gem "bootsnap", ">= 1.4.4", require: false
 
 group :development, :test do
@@ -16,6 +16,7 @@ group :development, :test do
   gem "pry-byebug"
   gem "rspec-rails", "~> 4.1.2"
   gem "ruby-lsp"
+  gem "ransack"
 end
 
 group :development do
