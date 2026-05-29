@@ -12,23 +12,30 @@ RSpec.describe MovieSerializer do
     )
   end
 
-  it "exposes only the public fields" do
+  it "serializa os atributos públicos com os valores corretos" do
     hash = described_class.new(movie).serializable_hash
 
-    expect(hash.keys).to match_array(%w[id title genre year country published_at description])
+    expect(hash["title"]).to eq("Hereditary")
+    expect(hash["genre"]).to eq("Movie")
+    expect(hash["year"]).to eq(2018)
+    expect(hash["country"]).to eq("USA")
+    expect(hash["description"]).to eq("Family horror")
+    expect(hash["id"]).to be_present
+    expect(hash["published_at"]).to be_present
   end
 
-  it "does not leak created_at or updated_at" do
+  it "não expõe created_at nem updated_at" do
     hash = described_class.new(movie).serializable_hash
 
     expect(hash).not_to include("created_at", "updated_at")
   end
 
-  it "serializes a collection" do
+  it "serializa uma coleção mantendo o contrato em cada item" do
     other = Movie.create!(title: "Other", genre: "Movie", year: 2019, country: "USA", published_at: "2019-01-01")
 
     hashes = described_class.new([movie, other]).serializable_hash
 
     expect(hashes.pluck("title")).to contain_exactly("Hereditary", "Other")
+    expect(hashes.first.keys).not_to include("created_at", "updated_at")
   end
 end
