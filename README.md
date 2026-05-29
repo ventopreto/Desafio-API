@@ -36,6 +36,12 @@ O desafio original pedia dois endpoints — um para importar um CSV e outro para
 
 ## Como usar
 
+Copiar `.env.example` para `.env` e ajustar o `POSTGRES_PASSWORD`:
+
+```sh
+cp .env.example .env
+```
+
 Buildar a imagem:
 
 ```sh
