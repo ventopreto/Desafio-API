@@ -37,7 +37,7 @@ class Api::V1::MoviesController < ApplicationController
     if @movies.empty?
       render json: {message: I18n.t("messages.movies.not_found")}, status: :ok
     else
-      render json: @movies.as_json(except: [:created_at, :updated_at]), status: :ok
+      render json: MovieSerializer.new(@movies).serializable_hash, status: :ok
     end
   end
 
