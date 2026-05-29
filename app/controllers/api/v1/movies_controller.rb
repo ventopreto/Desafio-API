@@ -17,7 +17,7 @@ class Api::V1::MoviesController < ApplicationController
       }, status: :content_too_large
     end
 
-    import = MovieImport.create!(file_name: uploaded_file.original_filename, status: :processing)
+    import = MovieImport.create!(file_name: safe_file_name(uploaded_file), status: :processing)
     path = persist_upload(uploaded_file, import.id)
     ImportMoviesJob.perform_later(import.id, path, uploaded_file.content_type)
 
@@ -46,10 +46,16 @@ class Api::V1::MoviesController < ApplicationController
   def persist_upload(uploaded_file, id)
     dir = Rails.root.join("tmp/imports")
     FileUtils.mkdir_p(dir)
-    extension = File.extname(uploaded_file.original_filename)
-    path = dir.join("#{id}#{extension}").to_s
-    File.binwrite(path, uploaded_file.read)
+    path = dir.join("#{id}.csv").to_s
+    IO.copy_stream(uploaded_file.tempfile, path)
     path
+  end
+
+  def safe_file_name(uploaded_file)
+    name = File.basename(uploaded_file.original_filename.to_s)
+    name.encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+      .gsub(/[^\w.\-]/, "_")
+      .first(255)
   end
 
   def invalid_param_message
