@@ -18,9 +18,11 @@ RSpec.describe "Movies API", type: :request do
       parameter name: :"query[published_at]", in: :query, type: :string, description: "Filtrar por data de publicação", required: false
       parameter name: :"query[description]", in: :query, type: :string, description: "Filtrar por descrição", required: false
       parameter name: :"query[invalid_param_eq]", in: :query, type: :string, description: "Filtro Inválido", required: false
+      parameter name: :page, in: :query, type: :integer, description: "Número da página (default 1)", required: false
+      parameter name: :limit, in: :query, type: :integer, description: "Itens por página (default 25, máximo 100)", required: false
 
       context "Quando há filmes correspondentes ao filtro" do
-        response "200", "retorna uma lista de filmes" do
+        response "200", "retorna uma lista paginada de filmes" do
           schema type: :array,
             items: {
               type: :object,
@@ -35,6 +37,12 @@ RSpec.describe "Movies API", type: :request do
               },
               required: ["title", "year", "genre", "published_at"]
             }
+
+          header "Current-Page", schema: {type: :string}, description: "Página atual"
+          header "Total-Pages", schema: {type: :string}, description: "Total de páginas"
+          header "Total-Count", schema: {type: :string}, description: "Total de registros"
+          header "Page-Limit", schema: {type: :string}, description: "Itens por página efetivo"
+          header "Link", schema: {type: :string}, description: "Links de navegação (RFC 5988)"
 
           let(:query) { {"query[country_eq]": "USA"} }
           run_test! do

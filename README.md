@@ -154,7 +154,30 @@ Possíveis estados de `status`:
 
 ### GET /api/v1/movies
 
-Lista todos os filmes ordenados por `year asc` por padrão.
+Lista filmes ordenados por `year asc` por padrão, paginados via [pagy](https://github.com/ddnexus/pagy).
+
+**Paginação**
+
+| query param | default | máximo | descrição |
+|---|---|---|---|
+| `page` | 1 | - | número da página |
+| `limit` | 25 | 100 | tamanho da página |
+
+Cabeçalhos de resposta:
+
+| header | descrição |
+|---|---|
+| `Current-Page` | página atual |
+| `Total-Pages` | total de páginas |
+| `Total-Count` | total de registros |
+| `Page-Limit` | tamanho da página efetivo |
+| `Link` | RFC 5988 com `rel="next"`, `prev`, `first`, `last` |
+
+Exemplo:
+
+```ruby
+GET /api/v1/movies?page=2&limit=10
+```
 
 **Response - 200 OK**
 

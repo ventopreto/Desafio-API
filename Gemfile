@@ -7,6 +7,7 @@ gem "rails", "~> 8.0.5"
 gem "pg", "~> 1.1"
 gem "solid_queue", "~> 1.1"
 gem "rack-attack", "~> 6.7"
+gem "pagy", "~> 9.0"
 
 gem "puma", "~> 6.4"
 gem "rswag"

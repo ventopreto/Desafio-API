@@ -30,7 +30,9 @@ class Api::V1::MoviesController < ApplicationController
   def index
     @query = Movie.all.ransack(params[:query])
     @query.sorts = "year asc" if @query.sorts.empty?
-    @movies = @query.result
+    @pagy, @movies = pagy(@query.result)
+    @movies = @movies.to_a
+    pagy_headers_merge(@pagy)
 
     if @movies.empty?
       render json: {message: I18n.t("messages.movies.not_found")}, status: :ok
