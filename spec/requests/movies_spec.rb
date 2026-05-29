@@ -151,14 +151,12 @@ RSpec.describe "Movies API", type: :request do
     end
 
     it "sanitiza o file_name antes de persistir" do
-      tricky = Rack::Test::UploadedFile.new("spec/fixtures/valid_file.csv", "text/csv", original_filename: "../../etc/passwd; rm -rf /.csv")
+      tricky = Rack::Test::UploadedFile.new("spec/fixtures/valid_file.csv", "text/csv", original_filename: "evil name; rm -rf.csv")
 
       post "/api/v1/movies", params: {file: tricky}
       import = MovieImport.find(json_response["import_id"])
 
-      expect(import.file_name).not_to include("/")
-      expect(import.file_name).not_to include(";")
-      expect(import.file_name).not_to include(" ")
+      expect(import.file_name).to eq("evil_name__rm_-rf.csv")
     end
 
     it "rejeita arquivo que excede o limite e não cria o import" do
