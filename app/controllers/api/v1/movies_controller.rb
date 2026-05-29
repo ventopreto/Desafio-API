@@ -3,7 +3,7 @@ class Api::V1::MoviesController < ApplicationController
 
   def create
     uploaded_file = params[:file]
-    import = MovieImport.create(file_name: uploaded_file.original_filename, status: 1)
+    import = MovieImport.create(file_name: uploaded_file.original_filename, status: :processing)
 
     if import.import_movies(uploaded_file)
       render json: {message: I18n.t("messages.import.success")}, status: :created
