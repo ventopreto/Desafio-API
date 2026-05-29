@@ -22,6 +22,19 @@ services:
       - "3001:3001"
     depends_on:
       - db
+  worker:
+    build: .
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      - LANG=pt_BR.UTF-8
+    command: bundle exec rails solid_queue:start
+    volumes:
+      - .:/myapp
+      - gems_cache:/usr/local/bundle
+    depends_on:
+      - db
 
 volumes:
   gems_cache:

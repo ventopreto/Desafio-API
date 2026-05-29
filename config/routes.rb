@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post "/movies", to: "movies#create"
       get "/movies", to: "movies#index"
+      get "/movie_imports/:id", to: "movie_imports#show"
     end
   end
 end
