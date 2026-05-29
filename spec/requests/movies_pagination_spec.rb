@@ -56,5 +56,7 @@ RSpec.describe "GET /api/v1/movies pagination", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(JSON.parse(response.body)).to eq("message" => "Nenhum filme encontrado")
+    expect(response.headers["Current-Page"]).to eq("99")
+    expect(response.headers["Total-Count"]).to eq("30")
   end
 end

@@ -31,11 +31,12 @@ class Api::V1::MoviesController < ApplicationController
     @query = Movie.all.ransack(params[:query])
     @query.sorts = "year asc" if @query.sorts.empty?
     @pagy, @movies = pagy(@query.result)
+    @movies = @movies.to_a
+    pagy_headers_merge(@pagy)
 
     if @movies.empty?
       render json: {message: I18n.t("messages.movies.not_found")}, status: :ok
     else
-      pagy_headers_merge(@pagy)
       render json: @movies.as_json(except: [:created_at, :updated_at]), status: :ok
     end
   end

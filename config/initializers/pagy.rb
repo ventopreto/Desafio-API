@@ -5,7 +5,6 @@ require "pagy/extras/limit"
 Pagy::DEFAULT[:limit] = 25
 Pagy::DEFAULT[:limit_max] = 100
 Pagy::DEFAULT[:limit_param] = :limit
-Pagy::DEFAULT[:limit_extra] = true
 Pagy::DEFAULT[:overflow] = :empty_page
 Pagy::DEFAULT[:headers] = {
   page: "Current-Page",
