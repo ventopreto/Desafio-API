@@ -34,7 +34,7 @@ class Api::V1::MoviesController < ApplicationController
   private
 
   def persist_upload(uploaded_file, id)
-    dir = Rails.root.join("tmp", "imports")
+    dir = Rails.root.join("tmp/imports")
     FileUtils.mkdir_p(dir)
     extension = File.extname(uploaded_file.original_filename)
     path = dir.join("#{id}#{extension}").to_s

@@ -14,6 +14,7 @@ gem "bootsnap", ">= 1.4.4", require: false
 group :development, :test do
   gem "standard"
   gem "standard-rails"
+  gem "brakeman", require: false
   gem "pry-byebug"
   gem "rspec-rails", "~> 7.1"
   gem "ruby-lsp"
