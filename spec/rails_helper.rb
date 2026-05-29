@@ -36,6 +36,8 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include ActiveJob::TestHelper
+
+  config.before(:each) { Rack::Attack.cache.store.clear }
 end
 
 def json_response
