@@ -6,7 +6,7 @@ class MovieImport < ApplicationRecord
   validates :file_name, presence: true
   validates :status, presence: true
 
-  enum status: {failed: 0, processing: 1, completed: 2, invalid_file: 3}
+  enum :status, {failed: 0, processing: 1, completed: 2, invalid_file: 3}
 
   def import_movies(file)
     return mark_invalid_file(I18n.t("messages.import.invalid_format")) unless valid_csv?(file)

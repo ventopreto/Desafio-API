@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.4"
+ruby "3.3.5"
 
-gem "rails", "~> 6.1.7", ">= 6.1.7.9"
+gem "rails", "~> 8.0.5"
 gem "pg", "~> 1.1"
 
-gem "puma", "~> 5.0"
+gem "puma", "~> 6.4"
 gem "rswag"
 gem "bootsnap", ">= 1.4.4", require: false
 
@@ -14,14 +14,14 @@ group :development, :test do
   gem "standard"
   gem "standard-rails"
   gem "pry-byebug"
-  gem "rspec-rails", "~> 4.1.2"
+  gem "rspec-rails", "~> 7.1"
   gem "ruby-lsp"
   gem "ransack"
 end
 
 group :development do
   gem "listen", "~> 3.3"
-  gem "rails-i18n", "~> 6.0"
+  gem "rails-i18n", "~> 8.0"
   gem "spring"
 end
 

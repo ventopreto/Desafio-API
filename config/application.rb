@@ -1,5 +1,6 @@
 require_relative "boot"
 
+require "logger"
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
@@ -22,7 +23,7 @@ Bundler.require(*Rails.groups)
 module Myapp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 8.0
     config.i18n.default_locale = :"pt-BR"
 
     # Configuration for the application, engines, and railties goes here.
