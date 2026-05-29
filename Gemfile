@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.3.5"
 
-gem "rails", "~> 7.2.3"
+gem "rails", "~> 8.0.5"
 gem "pg", "~> 1.1"
 
 gem "puma", "~> 6.4"
@@ -21,7 +21,7 @@ end
 
 group :development do
   gem "listen", "~> 3.3"
-  gem "rails-i18n", "~> 7.0", ">= 7.0.10"
+  gem "rails-i18n", "~> 8.0"
   gem "spring"
 end
 
