@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.4"
 
-gem "rails", "~> 6.1.7", ">= 6.1.7.10"
+gem "rails", "~> 7.0.10"
 gem "pg", "~> 1.1"
 
 gem "puma", "~> 5.0"
@@ -14,14 +14,14 @@ group :development, :test do
   gem "standard"
   gem "standard-rails"
   gem "pry-byebug"
-  gem "rspec-rails", "~> 4.1.2"
+  gem "rspec-rails", "~> 6.1"
   gem "ruby-lsp"
   gem "ransack"
 end
 
 group :development do
   gem "listen", "~> 3.3"
-  gem "rails-i18n", "~> 6.0"
+  gem "rails-i18n", "~> 7.0"
   gem "spring"
 end
 
