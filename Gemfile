@@ -9,6 +9,7 @@ gem "solid_queue", "~> 1.1"
 gem "rack-attack", "~> 6.7"
 gem "pagy", "~> 9.0"
 gem "alba", "~> 3.0"
+gem "ransack"
 
 gem "puma", "~> 6.4"
 gem "rswag"
@@ -21,7 +22,6 @@ group :development, :test do
   gem "pry-byebug"
   gem "rspec-rails", "~> 7.1"
   gem "ruby-lsp"
-  gem "ransack"
 end
 
 group :development do
