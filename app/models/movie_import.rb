@@ -20,6 +20,8 @@ class MovieImport < ApplicationRecord
       error_message: I18n.t("messages.import.create_error", error_message: e)
     )
     false
+  rescue CSV::MalformedCSVError
+    mark_invalid_file(I18n.t("messages.import.malformed_csv"))
   end
 
   private

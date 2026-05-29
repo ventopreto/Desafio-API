@@ -10,6 +10,7 @@ pt-BR:
       empty_file: "Arquivo vazio. Por favor, insira um arquivo com dados dos filmes."
       missing_file: "Arquivo não enviado. Por favor, anexe um arquivo CSV."
       too_large: "Arquivo muito grande. Tamanho máximo permitido: %{limit}."
+      malformed_csv: "CSV mal formado. Não foi possível processar o arquivo."
       not_found: "Importação não encontrada."
     movies:
       not_found: "Nenhum filme encontrado"

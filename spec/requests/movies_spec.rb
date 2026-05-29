@@ -150,6 +150,17 @@ RSpec.describe "Movies API", type: :request do
       expect(import.error_message).to eq("Formato de arquivo inválido. Por favor, envie um arquivo CSV.")
     end
 
+    it "sanitiza o file_name antes de persistir" do
+      tricky = Rack::Test::UploadedFile.new("spec/fixtures/valid_file.csv", "text/csv", original_filename: "../../etc/passwd; rm -rf /.csv")
+
+      post "/api/v1/movies", params: {file: tricky}
+      import = MovieImport.find(json_response["import_id"])
+
+      expect(import.file_name).not_to include("/")
+      expect(import.file_name).not_to include(";")
+      expect(import.file_name).not_to include(" ")
+    end
+
     it "rejeita arquivo que excede o limite e não cria o import" do
       stub_const("Api::V1::MoviesController::MAX_UPLOAD_BYTES", 100)
 
