@@ -1,12 +1,20 @@
 require "fileutils"
 
 class Api::V1::MoviesController < ApplicationController
+  MAX_UPLOAD_BYTES = 10.megabytes
+
   rescue_from ArgumentError, with: :invalid_param_message
 
   def create
     uploaded_file = params[:file]
     unless uploaded_file.respond_to?(:original_filename)
       return render json: {error: I18n.t("messages.import.missing_file")}, status: :bad_request
+    end
+
+    if uploaded_file.size > MAX_UPLOAD_BYTES
+      return render json: {
+        error: I18n.t("messages.import.too_large", limit: ActiveSupport::NumberHelper.number_to_human_size(MAX_UPLOAD_BYTES))
+      }, status: :content_too_large
     end
 
     import = MovieImport.create!(file_name: uploaded_file.original_filename, status: :processing)

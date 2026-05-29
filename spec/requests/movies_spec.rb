@@ -141,6 +141,17 @@ RSpec.describe "Movies API", type: :request do
       expect(import.status).to eq("invalid_file")
       expect(import.error_message).to eq("Formato de arquivo inválido. Por favor, envie um arquivo CSV.")
     end
+
+    it "rejeita arquivo que excede o limite e não cria o import" do
+      stub_const("Api::V1::MoviesController::MAX_UPLOAD_BYTES", 100)
+
+      post "/api/v1/movies", params: {file: valid_csv}
+
+      expect(response).to have_http_status(:content_too_large)
+      expect(json_response["error"]).to start_with("Arquivo muito grande")
+      expect(json_response["error"]).to include("100")
+      expect(MovieImport.count).to eq(0)
+    end
   end
 
   path "/api/v1/movie_imports/{id}" do
