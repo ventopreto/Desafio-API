@@ -13,7 +13,7 @@ class Api::V1::MoviesController < ApplicationController
 
     if uploaded_file.size > MAX_UPLOAD_BYTES
       return render json: {
-        error: I18n.t("messages.import.too_large", limit_mb: MAX_UPLOAD_BYTES / 1.megabyte)
+        error: I18n.t("messages.import.too_large", limit: ActiveSupport::NumberHelper.number_to_human_size(MAX_UPLOAD_BYTES))
       }, status: :content_too_large
     end
 

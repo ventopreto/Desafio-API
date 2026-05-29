@@ -9,7 +9,7 @@ pt-BR:
       create_error: "Erro ao criar filmes: %{error_message}"
       empty_file: "Arquivo vazio. Por favor, insira um arquivo com dados dos filmes."
       missing_file: "Arquivo não enviado. Por favor, anexe um arquivo CSV."
-      too_large: "Arquivo muito grande. Tamanho máximo permitido: %{limit_mb}MB."
+      too_large: "Arquivo muito grande. Tamanho máximo permitido: %{limit}."
       not_found: "Importação não encontrada."
     movies:
       not_found: "Nenhum filme encontrado"
