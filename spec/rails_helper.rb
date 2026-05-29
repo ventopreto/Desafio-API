@@ -5,7 +5,6 @@ require "simplecov"
 SimpleCov.start "rails" do
   add_filter "channels"
   add_filter "mailers"
-  add_filter "jobs"
 end
 
 ENV["RAILS_ENV"] ||= "test"
@@ -28,13 +27,15 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.fixture_path = "#{Rails.root.join("spec/fixtures")}"
+  config.fixture_paths = [Rails.root.join("spec/fixtures").to_s]
 
   config.use_transactional_fixtures = true
 
   config.infer_spec_type_from_file_location!
 
   config.filter_rails_from_backtrace!
+
+  config.include ActiveJob::TestHelper
 end
 
 def json_response

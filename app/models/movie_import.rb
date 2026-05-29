@@ -8,11 +8,11 @@ class MovieImport < ApplicationRecord
 
   enum :status, {failed: 0, processing: 1, completed: 2, invalid_file: 3}
 
-  def import_movies(file)
-    return mark_invalid_file(I18n.t("messages.import.invalid_format")) unless valid_csv?(file)
-    return mark_invalid_file(I18n.t("messages.import.empty_file")) if blank_csv?(file)
+  def import_movies(path, content_type)
+    return mark_invalid_file(I18n.t("messages.import.invalid_format")) unless valid_csv?(content_type)
+    return mark_invalid_file(I18n.t("messages.import.empty_file")) if blank_csv?(path)
 
-    process(file)
+    process(path)
   rescue ActiveRecord::RecordInvalid => e
     update!(
       status: :failed,
@@ -24,18 +24,18 @@ class MovieImport < ApplicationRecord
 
   private
 
-  def valid_csv?(file)
-    file && file.content_type == "text/csv"
+  def valid_csv?(content_type)
+    content_type == "text/csv"
   end
 
-  def blank_csv?(file)
-    CSV.foreach(file.path, headers: true).first.nil?
+  def blank_csv?(path)
+    CSV.foreach(path, headers: true).first.nil?
   end
 
-  def process(file)
+  def process(path)
     count = 0
     Movie.transaction do
-      CSV.foreach(file.path, headers: true) do |row|
+      CSV.foreach(path, headers: true) do |row|
         Movie.create!(
           genre: row["type"],
           title: row["title"],

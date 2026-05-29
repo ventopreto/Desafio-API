@@ -5,6 +5,7 @@ ruby "3.3.5"
 
 gem "rails", "~> 8.0.5"
 gem "pg", "~> 1.1"
+gem "solid_queue", "~> 1.1"
 
 gem "puma", "~> 6.4"
 gem "rswag"
