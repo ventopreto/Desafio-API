@@ -1,119 +1,157 @@
 # Desafio API
 
+API REST de catálogo de filmes. Importa filmes a partir de um arquivo CSV de forma assíncrona e expõe um endpoint de listagem com filtros e ordenação.
+
+## Sumário
+
+- [Sobre](#sobre)
+- [Stack](#stack)
+- [Como usar](#como-usar)
+- [Testes](#testes)
+- [API](#api)
+  - [POST /api/v1/movies](#post-apiv1movies)
+  - [GET /api/v1/movie_imports/:id](#get-apiv1movie_importsid)
+  - [GET /api/v1/movies](#get-apiv1movies)
+  - [Filtros](#filtros)
+
 ## Sobre
-Criar uma API de serviço do catálogo de filmes. Para isso será necessário criar dois endpoints, um que faça a leitura de um arquivo CSV e crie os registros no banco de dados. E um segundo que liste todos os filmes cadastrados em formato JSON.
 
-### Conteudo
-=================
- 
-   * [Sobre o projeto](#sobre)
-   * [Tabela de Conteúdo](#conteudo)
-   * [Requisitos](#requisitos)
-   * [Dicas](#dicas)
-   * [Como usar](#como-usar)
-   * [Testes](#testes)
-   * [Api](#api)
- 
+O desafio original pedia dois endpoints — um para importar um CSV e outro para listar os filmes. Esta implementação adiciona:
 
+- Importação **assíncrona** via SolidQueue. O `POST` retorna `202 Accepted` imediatamente com um `import_id` que pode ser consultado depois.
+- Endpoint de **status** (`GET /api/v1/movie_imports/:id`) para o cliente acompanhar a importação.
+- Stream do CSV com `CSV.foreach(headers: true)` em vez de carregar o arquivo inteiro em memória.
+- Importação envelopada em transaction — linha inválida no meio do arquivo dispara rollback completo.
+- Índices em `title` (unique), `year`, `genre`, `country` e `published_at` para os filtros Ransack.
+- Documentação OpenAPI gerada via rswag em `/api-docs`.
 
-### Requisitos
+## Stack
 
-* O desafio deve ser desenvolvido utilizando Ruby e tendo o Rails como framework.
-* Poderá optar pelos bancos de dados SQLite, Postgresql ou MongoDB.
-* Seguir o padrão API RESTful.
-* Ordenar pelo ano de lançamento.
-* Filtrar os registros por ano de lançamento, gênero, país, etc.
-* Garantir que não haja duplicidade de registros.
-* O projeto deve ser disponibilizado em um repositório aberto no GitHub.
-* A response do endpoint de listagem deve obedecer estritamente o padrão abaixo:
+- Ruby 3.3.5
+- Rails 8.0
+- PostgreSQL 16
+- SolidQueue (job backend, mesma DB da aplicação)
+- RSpec + rswag (testes + swagger)
+- Docker Compose (web + worker + db)
 
-```JSON
+## Como usar
 
-[
-    {
-        "id": "840c7cfc-cd1f-4094-9651-688457d97fa4",
-        "title": "13 Reasons Why",
-        "genre": "TV Show",
-        "year": "2020",
-        "country": "United States",
-        "published_at": "2020-05-07",
-        "description": "A classmate receives a series of tapes that unravel the mystery of her tragic choice."
-    }
-]
+Buildar a imagem:
+
+```sh
+docker compose build
 ```
 
-### Dicas
-* Testes são bem-vindos.
-* O filtro pode ser aplicado por 1 ou mais itens, mas devem atender aos requisitos.
-* Criar um readme.md com algumas informações do projeto é sempre bem útil.
-* O arquivo .csv, intitulado netflix_titles.csv, poderá ser encontrado neste repositório.
+Subir tudo (web + worker SolidQueue + Postgres):
 
+```sh
+docker compose up -d
+```
 
+Criar e migrar o banco na primeira execução:
 
-## como-usar
+```sh
+docker compose exec web bundle exec rails db:prepare
+```
 
-### Buildando a imagem
-```docker compose build```
+Documentação interativa via Swagger UI:
 
-### Subindo o projeto
-```docker compose up -d```
+```
+http://localhost:3001/api-docs
+```
 
-### Entrando em um container que esteja rodando
-```docker compose exec web bash```
+Entrar no container web:
 
-Com o servidor rodando visite [http://localhost:3001](http://localhost:3001/api-docs/index.html)/
-Nessa pagina temos uma documentação das rotas da API via swagger
+```sh
+docker compose exec web bash
+```
 
 ## Testes
-Para rodar todos os testes utilize o comando 
-~~~ruby
-rspec
-~~~
 
+```sh
+docker compose exec web bundle exec rspec
+```
+
+Cobertura via SimpleCov é gerada em `coverage/`.
 
 ## API
 
-## Criando os filmes
+### POST /api/v1/movies
+
+Recebe `multipart/form-data` com o arquivo CSV no campo `file`. O conteúdo é persistido em `tmp/imports/`, um `MovieImport` é criado com status `processing` e o `ImportMoviesJob` é enfileirado.
+
+**Request**
 
 ```http
-  POST /api/v1/movies
+POST /api/v1/movies
+Content-Type: multipart/form-data
+
+file=@netflix_titles.csv
 ```
-O nosso endpoint acima espera receber uma requisição com arquivo csv no seguinte formato
-```csv
-show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description
-s64,TV Show,13 Reasons Why,,"Dylan Minnette, Katherine Langford, Kate Walsh, Derek Luke, Brian d'Arcy James, Alisha Boe, Christian Navarro, Miles Heizer, Ross Butler, Devin Druid, Michele Selene Ang, Steven Silver, Amy Hargreaves",United States,"June 5, 2020",2020,TV-MA,4 Seasons,"Crime TV Shows, TV Dramas, TV Mysteries","After a teenage girl's perplexing suicide, a classmate receives a series of tapes that unravel the mystery of her tragic choice."
-```
-Se os parâmetros estão corretos e válidos, os filmes são criandos
-e a requisição retorna o status 201.
- 
-### Erros Comuns
- 
-#### Ausencia de parâmetro
- 
-```http
-  POST /api/v1/movies
-```
-A mesma requisição do exemplo anterior, mas o arquivo não contem o titulo do filme
-```csv
-show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description
-s64,TV Show,,,"Dylan Minnette, Katherine Langford, Kate Walsh, Derek Luke, Brian d'Arcy James, Alisha Boe, Christian Navarro, Miles Heizer, Ross Butler, Devin Druid, Michele Selene Ang, Steven Silver, Amy Hargreaves",United States,"June 5, 2020",2020,TV-MA,4 Seasons,"Crime TV Shows, TV Dramas, TV Mysteries","After a teenage girl's perplexing suicide, a classmate receives a series of tapes that unravel the mystery of her tragic choice."
-```
-Nesse caso como um dos parâmetros estão faltando,
-a requisição retorna com status 422 e uma mensagem informando
-que title não pode ficar em branco.
- 
+
+**Response — 202 Accepted**
+
 ```json
 {
-  "error": "A validação falhou: Title não pode ficar em branco"
+  "message": "Importação aceita. Use o import_id para verificar o status.",
+  "import_id": 42
 }
 ```
- 
-## Consultando os filmes
-```http
-GET /api/v1/movies
+
+**Response — 400 Bad Request** (arquivo ausente)
+
+```json
+{
+  "error": "Arquivo não enviado. Por favor, anexe um arquivo CSV."
+}
 ```
 
-A requisição é feita com sucesso e retorna uma lista de filmes em json e status 200
+Formato esperado do CSV:
+
+```csv
+show_id,type,title,director,cast,country,date_added,release_year,rating,duration,listed_in,description
+s64,TV Show,13 Reasons Why,,"Dylan Minnette, ...",United States,"June 5, 2020",2020,TV-MA,4 Seasons,"Crime TV Shows, TV Dramas","After a teenage girl's ..."
+```
+
+### GET /api/v1/movie_imports/:id
+
+Retorna o estado de uma importação. O status evolui por `processing → completed | failed | invalid_file`.
+
+**Response — 200 OK**
+
+```json
+{
+  "id": 42,
+  "file_name": "netflix_titles.csv",
+  "error_message": null,
+  "status": "completed",
+  "movies_count": 131
+}
+```
+
+**Response — 404 Not Found**
+
+```json
+{
+  "error": "Importação não encontrada."
+}
+```
+
+Possíveis estados de `status`:
+
+| status | significado |
+|--------|-------------|
+| `processing` | job ainda na fila ou em execução |
+| `completed` | todos os registros foram inseridos |
+| `failed` | algum registro violou validação — rollback aplicado, `error_message` preenchido |
+| `invalid_file` | content-type não era `text/csv` ou o arquivo estava vazio |
+
+### GET /api/v1/movies
+
+Lista todos os filmes ordenados por `year asc` por padrão.
+
+**Response — 200 OK**
+
 ```json
 [
   {
@@ -124,24 +162,25 @@ A requisição é feita com sucesso e retorna uma lista de filmes em json e stat
     "country": "United Kingdom, United States",
     "published_at": "2020-11-01",
     "description": "In this dark satire from director Stanley Kubrick, a young, vicious sociopath in a dystopian England undergoes an experimental rehabilitation therapy."
-  },
-  {
-    "id": "ffe76768-f08a-4ceb-934a-c7f5b9010cd2",
-    "title": "300 Miles to Heaven",
-    "genre": "Movie",
-    "year": 1989,
-    "country": "Denmark, France, Poland",
-    "published_at": "2019-10-01",
-    "description": "Hoping to help their dissident parents, two brothers sneak out of Poland and land as refugees in Denmark, where they are prevented from returning home."
   }
 ]
 ```
 
-## Consultando os filmes usando filtros
+Quando nenhum filme é encontrado:
+
+```json
+{ "message": "Nenhum filme encontrado" }
+```
+
+### Filtros
+
+Os filtros usam Ransack. Atributos permitidos: `title`, `genre`, `year`, `country`, `published_at`, `description`. Predicados Ransack (`_eq`, `_cont`, `_gteq`, …) são suportados.
+
+**Exemplo — filtro composto**
+
 ```http
 GET /api/v1/movies?query[year_eq]=2020&query[country_eq]=Poland
 ```
-A requisição é feita com sucesso e retorna uma lista de filmes respeitando os filtros e status 200
 
 ```json
 [
@@ -157,15 +196,18 @@ A requisição é feita com sucesso e retorna uma lista de filmes respeitando os
 ]
 ```
 
-## Consulta com filtro inválido
+**Ordenação customizada**
+
+```http
+GET /api/v1/movies?query[s]=title+asc
+```
+
+**Filtro inválido — 400 Bad Request**
+
 ```http
 GET /api/v1/movies?query[yer_eq]=2020
 ```
 
-A requisição falha e retorna um json com o erro e mensagem "Parâmetro de busca inválido" e status 400
-
 ```json
-{
-  "error": "Parâmetro de busca inválido"
-}
+{ "error": "Parâmetro de busca inválido" }
 ```
