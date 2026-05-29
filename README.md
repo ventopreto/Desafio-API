@@ -16,12 +16,12 @@ API REST de catálogo de filmes. Importa filmes a partir de um arquivo CSV de fo
 
 ## Sobre
 
-O desafio original pedia dois endpoints — um para importar um CSV e outro para listar os filmes. Esta implementação adiciona:
+O desafio original pedia dois endpoints - um para importar um CSV e outro para listar os filmes. Esta implementação adiciona:
 
 - Importação **assíncrona** via SolidQueue. O `POST` retorna `202 Accepted` imediatamente com um `import_id` que pode ser consultado depois.
 - Endpoint de **status** (`GET /api/v1/movie_imports/:id`) para o cliente acompanhar a importação.
 - Stream do CSV com `CSV.foreach(headers: true)` em vez de carregar o arquivo inteiro em memória.
-- Importação envelopada em transaction — linha inválida no meio do arquivo dispara rollback completo.
+- Importação envelopada em transaction - linha inválida no meio do arquivo dispara rollback completo.
 - Índices em `title` (unique), `year`, `genre`, `country` e `published_at` para os filtros Ransack.
 - Documentação OpenAPI gerada via rswag em `/api-docs`.
 
@@ -38,25 +38,25 @@ O desafio original pedia dois endpoints — um para importar um CSV e outro para
 
 Copiar `.env.example` para `.env` e ajustar o `POSTGRES_PASSWORD`:
 
-```sh
+```ruby
 cp .env.example .env
 ```
 
 Buildar a imagem:
 
-```sh
+```ruby
 docker compose build
 ```
 
 Subir tudo (web + worker SolidQueue + Postgres):
 
-```sh
+```ruby
 docker compose up -d
 ```
 
 Criar e migrar o banco na primeira execução:
 
-```sh
+```ruby
 docker compose exec web bundle exec rails db:prepare
 ```
 
@@ -68,13 +68,13 @@ http://localhost:3001/api-docs
 
 Entrar no container web:
 
-```sh
+```ruby
 docker compose exec web bash
 ```
 
 ## Testes
 
-```sh
+```ruby
 docker compose exec web bundle exec rspec
 ```
 
@@ -95,7 +95,7 @@ Content-Type: multipart/form-data
 file=@netflix_titles.csv
 ```
 
-**Response — 202 Accepted**
+**Response - 202 Accepted**
 
 ```json
 {
@@ -104,7 +104,7 @@ file=@netflix_titles.csv
 }
 ```
 
-**Response — 400 Bad Request** (arquivo ausente)
+**Response - 400 Bad Request** (arquivo ausente)
 
 ```json
 {
@@ -123,7 +123,7 @@ s64,TV Show,13 Reasons Why,,"Dylan Minnette, ...",United States,"June 5, 2020",2
 
 Retorna o estado de uma importação. O status evolui por `processing → completed | failed | invalid_file`.
 
-**Response — 200 OK**
+**Response - 200 OK**
 
 ```json
 {
@@ -135,7 +135,7 @@ Retorna o estado de uma importação. O status evolui por `processing → comple
 }
 ```
 
-**Response — 404 Not Found**
+**Response - 404 Not Found**
 
 ```json
 {
@@ -149,14 +149,14 @@ Possíveis estados de `status`:
 |--------|-------------|
 | `processing` | job ainda na fila ou em execução |
 | `completed` | todos os registros foram inseridos |
-| `failed` | algum registro violou validação — rollback aplicado, `error_message` preenchido |
+| `failed` | algum registro violou validação - rollback aplicado, `error_message` preenchido |
 | `invalid_file` | content-type não era `text/csv` ou o arquivo estava vazio |
 
 ### GET /api/v1/movies
 
 Lista todos os filmes ordenados por `year asc` por padrão.
 
-**Response — 200 OK**
+**Response - 200 OK**
 
 ```json
 [
@@ -182,7 +182,7 @@ Quando nenhum filme é encontrado:
 
 Os filtros usam Ransack. Atributos permitidos: `title`, `genre`, `year`, `country`, `published_at`, `description`. Predicados Ransack (`_eq`, `_cont`, `_gteq`, …) são suportados.
 
-**Exemplo — filtro composto**
+**Exemplo - filtro composto**
 
 ```http
 GET /api/v1/movies?query[year_eq]=2020&query[country_eq]=Poland
@@ -208,7 +208,7 @@ GET /api/v1/movies?query[year_eq]=2020&query[country_eq]=Poland
 GET /api/v1/movies?query[s]=title+asc
 ```
 
-**Filtro inválido — 400 Bad Request**
+**Filtro inválido - 400 Bad Request**
 
 ```http
 GET /api/v1/movies?query[yer_eq]=2020
